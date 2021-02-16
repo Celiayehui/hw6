@@ -1,3 +1,4 @@
+let db = firebase.firestore()
 // First, sign up for an account at https://themoviedb.org
 // Once verified and signed-in, go to Settings and create a new
 // API key; in the form, indicate that you'll be using this API
@@ -16,8 +17,13 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   // data and put the Array of movie Objects in a variable called
   // movies. Write the contents of this array to the JavaScript
   // console to ensure you've got good data
-  // ⬇️ ⬇️ ⬇️
-
+  // // ⬇️ ⬇️ ⬇️
+  let response = await fetch('https://api.themoviedb.org/3/movie/550?api_key=a863f88f5a8b17fb2534eff20e6af019')
+  // let response = await fetch('https://api.themoviedb.org/3/movie/now_playing?api_key=${a863f88f5a8b17fb2534eff20e6af019}&language=en-US')
+  let json = await response.json()
+  let movies = [json]
+  console.log(movies)
+  
   // ⬆️ ⬆️ ⬆️ 
   // End Step 1
   
@@ -34,6 +40,30 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   // </div>
   // ⬇️ ⬇️ ⬇️
 
+  for(let i=0; i<movies.length;i++){
+    let movieID = movies[i].id
+    let poster = movies[i].poster_path
+  
+  // let movieThread = movies.backdrop_path
+  // console.log(movieThread)
+    document.querySelector('.movies').insertAdjacentHTML('beforeend',`
+      <div class="movie-${movieID} w-1/5 p-4">
+        <img src ="https://image.tmdb.org/t/p/w500/${poster}" class="w-full">
+        <a href="#" class="watched-button block text-center text-white bg-green-500 mt-4 px-4 py-2 rounded">I've watched this!</a>  
+      </div>
+      `)
+
+      // document.querySelector('.watched-button').addEventListener('click',function(event){
+      //   event.preventDefault()
+      //   console.log('clicked!')
+      // })
+      let watchedButton = document.querySelector(`.movie-${movieID} .watched-button`)
+      watchedButton.addEventListener('click', function(event){
+        event.preventDefault()
+        console.log(`movie-${movieID} clicked`)
+        document.querySelector(`.movie-${movieID}`).classList.add(`opacity-20`)
+      })
+  }
   // ⬆️ ⬆️ ⬆️ 
   // End Step 2
 
@@ -69,4 +99,25 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   //   database.
   // - Hint: you can use if (document) with no comparison
   //   operator to test for the existence of an object.
+
+  // let querySnapshot = await db.collection('watched').get()
+
+  // let watched = querySnapshot.docs
+  // for (let j=0; j<watched.length;j++){
+  //   watched[j].data()
+  //   watched,name
+  // }
+
+  // let docRef = await db.collection('watched').doc('watchedmovies').get({
+  //   movieID: movieID
+  // })
+
+
+  let movieID = (`${movies.results[i].id}`)
+  // let docRef = db.collection('watched').doc('watchedmovies').set({
+  //   movieID: movieID
+  // })
+
+  // docRef.id
+  await db.collection('watched').doc(`${movieID}`).set({})
 })
